@@ -1,0 +1,9 @@
+## Interface: 11508, 11509, 16001
+## Title: Pint's Rank Check
+## Notes: Finds spells on your action bars that are an old rank after you've learned a better one, and swaps them for the new rank at the click of a button. /ranks
+## Author: Jake (built with Claude)
+## Version: 1.0
+## X-Curse-Project-ID: 1821526
+## SavedVariables: PintsRankCheckDB
+
+PintsRankCheck.lua
