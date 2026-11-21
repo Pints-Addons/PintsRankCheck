@@ -1,5 +1,9 @@
 Pint's Rank Check - Changelog
 
+v1.0.2
+- /ranks always answers now (in combat it says it will look after the fight; if something goes wrong it says what).
+  /ranks debug shows what it can see: ranked spells in your spellbook and on your bars.
+
 v1.0.1
 - Dual spec: switching spec checks your action bars again, since each spec has its own.
 

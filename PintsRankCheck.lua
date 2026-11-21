@@ -4,7 +4,7 @@
 -- Classic Era and WoW Forever (the modern game client: its spellbook calls moved to C_SpellBook / C_Spell).
 local ADDON = ...
 local db
-local MODERN = C_SpellBook and C_SpellBook.GetSpellBookItemInfo and true or false
+local MODERN = (C_SpellBook and C_SpellBook.GetSpellBookItemInfo and C_SpellBook.GetNumSpellBookSkillLines and C_SpellBook.GetSpellBookSkillLineInfo) and true or false
 local SLOTS = MODERN and 180 or 120
 
 local function Say(msg) print("|cffd4a24cRank Check|r: " .. msg) end
@@ -170,8 +170,10 @@ end
 ---------------------------------------------------------------- when to look
 local pend
 local function Check(quiet)
-  if InCombatLockdown() then pend = true; return end
-  local n = Refresh(false)
+  if InCombatLockdown() then pend = true; if not quiet then Say("in combat - I'll look once the fight is over.") end return end
+  if not db then PintsRankCheckDB = PintsRankCheckDB or {}; db = PintsRankCheckDB; db.keep = db.keep or {} end
+  local ok, n = pcall(Refresh, false)
+  if not ok then Say("couldn't read your spells or bars: " .. tostring(n)); return end
   if not quiet and n == 0 then Say("every spell on your bars is the best rank you know.") end
 end
 local ev = CreateFrame("Frame")
@@ -201,6 +203,19 @@ end)
 SLASH_PINTSRANKCHECK1 = "/ranks"; SLASH_PINTSRANKCHECK2 = "/rankcheck"
 SlashCmdList.PINTSRANKCHECK = function(msg)
   msg = (msg or ""):lower()
+  if not db then PintsRankCheckDB = PintsRankCheckDB or {}; db = PintsRankCheckDB; db.keep = db.keep or {} end
   if msg == "reset" then db.keep = {}; Say("forgot every Keep - all low ranks will be offered again."); Check(false); return end
+  if msg == "debug" then
+    local ok, best = pcall(BestRanks)
+    if not ok then Say("spellbook read failed: " .. tostring(best)); return end
+    local n = 0; for _ in pairs(best) do n = n + 1 end
+    local spells, ranked = 0, 0
+    for slot = 1, SLOTS do
+      local kind, id = GetActionInfo(slot)
+      if kind == "spell" and id then spells = spells + 1; if RankOf(Subtext(id)) then ranked = ranked + 1 end end
+    end
+    Say(("%s client - %d ranked spells in your spellbook; %d spells on your bars, %d of them with a rank."):format(MODERN and "modern" or "Classic", n, spells, ranked))
+    return
+  end
   Check(false)
 end
