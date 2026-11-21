@@ -1,7 +1,9 @@
 Pint's Rank Check - Changelog
 
+v1.0.1
+- Dual spec: switching spec checks your action bars again, since each spec has its own.
+
 v1.0
 - New: finds action-bar buttons holding an old rank of a spell after you learn a better one, and swaps them for the new
   rank - Replace all, or one button at a time. Keep leaves a button on its rank for good. Checks when you learn spells
   and at login; /ranks checks now, /ranks reset forgets every Keep. Never changes your bars in combat.
-- WoW Forever: no error at login (an event the modern client doesn't have any more).

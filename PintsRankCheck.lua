@@ -177,7 +177,9 @@ end
 local ev = CreateFrame("Frame")
 -- (the modern client has dropped some of these events: register each only if the game knows it)
 for _, e in ipairs({ "ADDON_LOADED", "PLAYER_LOGIN", "LEARNED_SPELL_IN_TAB", "LEARNED_SPELL_IN_SKILL_LINE", "SPELLS_CHANGED",
-  "PLAYER_REGEN_ENABLED", "ACTIONBAR_SLOT_CHANGED" }) do
+  "PLAYER_REGEN_ENABLED", "ACTIONBAR_SLOT_CHANGED",
+  -- switching spec with dual spec swaps your bars: look them over again
+  "ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_SPECIALIZATION_CHANGED", "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" }) do
   if not C_EventUtils or not C_EventUtils.IsEventValid or C_EventUtils.IsEventValid(e) then pcall(ev.RegisterEvent, ev, e) end
 end
 local timer
@@ -192,7 +194,8 @@ ev:SetScript("OnEvent", function(_, event, arg1)
   -- (spell learning fires several events at once: look once, a moment later)
   if timer then return end
   timer = true
-  C_Timer.After(event == "PLAYER_LOGIN" and 4 or 1.5, function() timer = nil; Check(true) end)
+  local wait = (event == "PLAYER_LOGIN" and 4) or ((event:find("TALENT") or event:find("SPECIALIZATION")) and 2.5) or 1.5
+  C_Timer.After(wait, function() timer = nil; Check(true) end)
 end)
 
 SLASH_PINTSRANKCHECK1 = "/ranks"; SLASH_PINTSRANKCHECK2 = "/rankcheck"
